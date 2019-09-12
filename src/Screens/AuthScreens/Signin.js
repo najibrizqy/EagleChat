@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image } from "react-native";
-import { Container, Content, Form, Item, Input, Button, Toast, Row, Col, Icon } from 'native-base';
-import firebase from '../../Config/Firebase';
+import { Container, Content, Form, Item, Input, Button, Toast, Row, Col, Icon, Spinner } from 'native-base';
+import firebase, {Firestore} from '../../Config/Firebase';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import logo from '../../Assets/eaglelogo.png'
 
@@ -16,12 +17,17 @@ class Signin extends Component {
       showToast: false,
       isLoading: false,
     }
+  }
 
-    firebase.auth().onAuthStateChanged(user => {
+  unsubscribe = firebase.auth().onAuthStateChanged(user => {
       if (user) {
         this.props.navigation.navigate('HomeScreen')
       }
     });
+
+  handleSignup = () => {
+    this.unsubscribe()
+    this.props.navigation.navigate('SignupScreen')
   }
 
   handleChange = (name, value) => {
@@ -33,14 +39,27 @@ class Signin extends Component {
     console.log(newFormData)
   }
 
-  handleSubmit = () => {
+  handleSubmit = async () => {
+    this.setState({isLoading:true})
     const {formData} = this.state
-    firebase.auth().signInWithEmailAndPassword(formData.email, formData.password)
-    .then(() => {
-      this.props.navigation.navigate('HomeScreen')
+    await firebase.auth().signInWithEmailAndPassword(formData.email, formData.password)
+    .then( async (res) => {
+      AsyncStorage.setItem('uid', res.user.uid);
+      await Firestore.collection("users").doc(res.user.uid).update({status: 'online'})
+      .then( async () => {
+        await Firestore.collection("users").doc(res.user.uid).get().then((result) => {
+          AsyncStorage.setItem('email', result.data().email);
+          AsyncStorage.setItem('full_name', result.data().full_name);
+          AsyncStorage.setItem('image', result.data().image);
+          AsyncStorage.setItem('username', result.data().username);
+
+          this.props.navigation.navigate('HomeScreen')
+        })
+      })
     })
     .catch(err => {
-      let errMsg = err.code == 'auth/invalid-email' ? 'Email not valid.': err.message;
+      this.setState({isLoading:false})
+      let errMsg = err.code == 'auth/invalid-email' ? 'Email not valid.': 'Email or password is wrong.';
       Toast.show({
         text: errMsg,
         buttonText: 'Ok',
@@ -82,20 +101,31 @@ class Signin extends Component {
                   <Text style={styles.btnForgot}>Forgot Password</Text>
                 </Col>
               </Row>
-              <Button onPress={this.handleSubmit} full info style={styles.btnSignin}>
-                <Text style={styles.textSignin}>SIGN IN</Text>
-              </Button>
+              {
+                this.state.isLoading == false ?
+                  <Button onPress={this.handleSubmit} full info style={styles.btnSignin}>
+                    <Text style={styles.textSignin}>SIGN IN</Text>
+                  </Button>
+                : 
+                  <Button onPress={this.handleSubmit} full info style={styles.btnSignin} disabled>
+                    <Spinner color='white' style={styles.loading} /><Text style={styles.textSignin}>SIGN IN</Text>
+                  </Button>
+              }
             </Form>
             <Row>
               <Col>
                 <Text style={styles.foot}>Don't have an account? &nbsp;
-                  <Text style={styles.btnSignup} onPress={() => {this.props.navigation.navigate('SignupScreen')}}>Sign Up</Text>
+                  <Text style={styles.btnSignup} onPress={this.handleSignup}>Sign Up</Text>
                 </Text>
               </Col>
             </Row>
         </Content>
       </Container>
     );
+  }
+  
+  componentWillUnmount(){
+    this.unsubscribe()
   }
 }
 
@@ -153,4 +183,8 @@ const styles = StyleSheet.create({
       margin: 20, 
       borderRadius: 10
     },
+    loading: {
+      marginLeft: -35,
+      marginRight: 5
+    }
 });

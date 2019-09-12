@@ -3,9 +3,9 @@ import { StyleSheet, View, Text, Image } from "react-native";
 import { Container, Content, Tab, Tabs } from 'native-base';
 
 import Header from '../../Components/Header';
-import Maps from '../../Components/Maps';
-import Friend from '../../Components/Friend';
-import Profile from '../../Components/Profile';
+import Maps from './Maps';
+import Friends from './Friends';
+import Profile from './Profile';
 
 export default class HomeTabs extends Component {
   render() {
@@ -14,19 +14,20 @@ export default class HomeTabs extends Component {
         <Header />
         <Tabs style={Platform.OS === 'android' ? { overflow: 'hidden' } : null}>
           <Tab heading="Maps" tabStyle={styles.color} activeTabStyle={styles.color} >
-            <Maps />
+            <Maps navigation={this.props.navigation} />
           </Tab>
-          <Tab heading="Friend" tabStyle={styles.color} activeTabStyle={styles.color}>
-            <Friend />
+          <Tab heading="Friends" tabStyle={styles.color} activeTabStyle={styles.color}>
+            <Friends navigation={this.props.navigation} />
           </Tab>
           <Tab heading="Profile" tabStyle={styles.color} activeTabStyle={styles.color}>
-            <Profile />
+            <Profile navigation={this.props.navigation} />
           </Tab>
         </Tabs>
       </Container>
     );
   }
 }
+
 const styles = StyleSheet.create({
   color: {
     backgroundColor: '#3498db',

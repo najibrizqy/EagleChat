@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
-import { Container, Content, Form, Item, Input, Button, Toast, Row, Col, Icon } from 'native-base';
+import { Container, Content, Form, Item, Input, Button, Toast, Row, Col, Icon, Spinner } from 'native-base';
 import firebase, {Firestore}  from '../../Config/Firebase';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import logo from '../../Assets/eaglelogo.png'
 
@@ -13,6 +14,7 @@ class Signup extends Component {
         username: '',
         full_name: '',
         email: '',
+        image: 'https://www.shareicon.net/data/2016/09/01/822711_user_512x512.png',
         password: ''
       },
       showToast: false,
@@ -47,27 +49,37 @@ class Signup extends Component {
         style: styles.toast
       })
     }else{
+      this.setState({isLoading:true})
       firebase.auth().createUserWithEmailAndPassword(formData.email, formData.password)
-      .then((user) => {
+      .then( async (user) => {
         const userID = user.user.uid
-        const userRef = Firestore.collection('users').doc(userID)
-        userRef.set({
+        await Firestore.collection('users').doc(userID).set({
+          email: formData.email,
           full_name: formData.full_name,
-          image: 'https://www.shareicon.net/data/2016/09/01/822711_user_512x512.png',
-          status: 'offline',
+          image: formData.image,
+          status: 'online',
           username: formData.username,
         })
+        
+        // Set Data user to asyncstorage
+          AsyncStorage.setItem('uid', userID);
+          AsyncStorage.setItem('email', formData.email);
+          AsyncStorage.setItem('full_name', formData.full_name);
+          AsyncStorage.setItem('image', formData.image);
+          AsyncStorage.setItem('username', formData.username);
+
         Toast.show({
           text: `Welcome ${formData.username}`,
           buttonText: "Ok",
           type: "success",
           position:'bottom',
-          duration:3000,
+          duration:4000,
           style: styles.toast
         })
         this.props.navigation.navigate('HomeScreen')
       })
       .catch(err => {
+        this.setState({isLoading:false})
         let errMsg = err.code == 'auth/invalid-email' ? 'Email not valid.': err.message;
         Toast.show({
           text: errMsg,
@@ -120,9 +132,16 @@ class Signup extends Component {
                     maxLength={16} 
                     onChangeText={(text)=>this.handleChange('password',text)} />
                 </Item>
-                <Button full info style={styles.btnSignup} onPress={this.handleSubmit}>
-                  <Text style={styles.textSignup}>SIGN UP</Text>
-                </Button>
+                {
+                  this.state.isLoading == false ? 
+                    <Button full info style={styles.btnSignup} onPress={this.handleSubmit}>
+                      <Text style={styles.textSignup}>SIGN UP</Text>
+                    </Button>
+                  : 
+                    <Button full info style={styles.btnSignup} onPress={this.handleSubmit} disabled>
+                      <Spinner color='white' style={styles.loading} /><Text style={styles.textSignup}>SIGN UP</Text>
+                    </Button>
+                }
             </Form>
             <Row style={styles.foot}>
               <Col>
@@ -186,5 +205,9 @@ const styles = StyleSheet.create({
       width: 150, 
       height:150,
       alignSelf: 'center'
+    },
+    loading: {
+      marginLeft: -35,
+      marginRight: 5
     }
 });
