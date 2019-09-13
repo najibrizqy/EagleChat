@@ -22,9 +22,7 @@ export default class FriendList extends Component{
                     doc => {
                         let data = doc.data()
                         data.uid = doc.id
-                        return data.uid !== this.state.userId ?
-                        data
-                        :null
+                        return data.uid !== this.state.userId ? data : null
                     })
                 this.setState({users})
             })

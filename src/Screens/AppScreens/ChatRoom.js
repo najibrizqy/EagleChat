@@ -1,6 +1,7 @@
 import React, {Component, Fragment} from 'react';
-import { StyleSheet, View, Text } from "react-native";
-import { GiftedChat } from 'react-native-gifted-chat'
+import { StyleSheet } from "react-native";
+import { GiftedChat, Send } from 'react-native-gifted-chat'
+import { Icon } from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage'
 
 import firebase, {Firestore} from '../../Config/Firebase';
@@ -65,6 +66,17 @@ class ChatRoom extends Component {
                     messages={this.state.messages}
                     onSend={messages => this.onSend(messages)}
                     onPressAvatar={this.openFriendProfile}
+                    renderSend ={ (props) => {
+                        return (
+                            <Send
+                                {...props}
+                            >
+                                <View style={styles.send}>
+                                    <Icon type="MaterialIcons" name="send" style={{color:"#3498db"}} />
+                                </View>
+                            </Send>
+                        );
+                    }}
                     user={{
                         _id: this.state.senderId,
                         name: this.state.username,
@@ -75,5 +87,12 @@ class ChatRoom extends Component {
         )
     }
 }
+
+const styles = StyleSheet.create({
+    send:{
+        marginRight: 10,
+        marginBottom: 7
+    },
+});
 
 export default ChatRoom
