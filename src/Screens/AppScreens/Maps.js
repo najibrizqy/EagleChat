@@ -137,12 +137,12 @@ export default class Maps extends Component{
                                     {
                                         user.uid ==userId ? 
                                             <View>
-                                                <Image source={markerUser} style={{width: 40, height: 40}} />
+                                                <Image source={markerUser} style={styles.markerYou} />
                                             </View>
                                         : 
     
                                         <View>
-                                            <Thumbnail small source={{uri: user.image}} />
+                                            <Thumbnail small source={{uri: user.image}} style={user.status == "online" ?styles.markerOnline: styles.markerOffline} />
                                         </View>
                                     }
                                 </Marker>
@@ -169,4 +169,16 @@ const styles = StyleSheet.create({
         height: '100%',
         width: '100%',
     },
+    markerYou:{
+        width: 40,
+        height: 40,
+    },
+    markerOnline:{
+        borderWidth: 2,
+        borderColor: "#42b72a"
+    },
+    markerOffline:{
+        borderWidth: 2,
+        borderColor: "gray"
+    }
 });

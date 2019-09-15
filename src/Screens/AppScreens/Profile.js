@@ -21,7 +21,6 @@ export default class Profile extends Component{
     }
     
     handleLogout = async () => {
-        await AsyncStorage.clear();
         await firebase.auth().signOut()
         .then( async () => {
             const userToken = await AsyncStorage.getItem('uid');

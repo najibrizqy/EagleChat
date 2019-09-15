@@ -4,7 +4,7 @@ import { GiftedChat, Send } from 'react-native-gifted-chat'
 import { Icon } from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage'
 
-import {Firestore} from '../../Config/Firebase';
+import firebase, {Firestore} from '../../Config/Firebase';
 import Header from '../../Components/HeaderChat';
 
 class ChatRoom extends Component {
@@ -39,10 +39,14 @@ class ChatRoom extends Component {
     }
 
     chatListener = (snapshot) => {
-        let messages = snapshot.docChanges().map(changes => {
-          let data = changes.doc.data()
-          data.createdAt = new Date(data.createdAt.seconds * 1000)
-          return data
+        let docChanges = snapshot.docChanges() 
+        let messages = []
+        docChanges.forEach(changes=>{
+            let data = changes.doc.data()
+            if(data.createdAt !== null){
+                data.createdAt = new Date(data.createdAt.seconds * 1000) 
+                messages.push(data) 
+            }
         })
         let appendedMessage =  GiftedChat.append(this.state.messages, messages)
         appendedMessage.sort((a, b)=>b.createdAt.getTime() - a.createdAt.getTime())
@@ -50,6 +54,7 @@ class ChatRoom extends Component {
     }
 
     onSend(messages = []) {
+        messages[0].createdAt = firebase.firestore.FieldValue.serverTimestamp()
         this.state.receiverChatRef.doc(messages[0]._id).set(messages[0])
     }
 
