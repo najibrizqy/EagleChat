@@ -6,7 +6,7 @@ import { Thumbnail } from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import firebase, {Firestore} from '../../Config/Firebase';
-import marker from '../../Assets/marker.png';
+import markerUser from '../../Assets/marker.png';
 
 export default class Maps extends Component{
     constructor(){
@@ -14,8 +14,8 @@ export default class Maps extends Component{
         this.state = {
             users:[],
             region : {
-                latitude: -7.78825,
-                longitude: 110.4324,
+                latitude: -7.7585007,
+                longitude: 110.378115,
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
             },
@@ -46,20 +46,32 @@ export default class Maps extends Component{
         }
         if(hasLocationPermission){
             Geolocation.watchPosition(
-              (position) => {
+              async (position) => {
                 let Position = {
                   latitude:position.coords.latitude,
                   longitude:position.coords.longitude
                 }
-                firebase.firestore()
+                await firebase.firestore()
                   .collection('users')
                   .doc(this.state.userId)
                   .update({Position})
+                .then(() => {
+                    this.setState({
+                        region: {...this.state.region, latitude: position.coords.latitude, longitude: position.coords.longitude}
+                    })
+                })
               },
               (err) => {
-                  alert(err.code, err.message);
+                  console.log(err.code, err.message);
               },
-              { enableHighAccuracy: true, interval: 10000, timeout: 15000, maximumAge: 10000 }
+              { 
+                showLocationDialog: true,
+                distanceFilter: 1,
+                enableHighAccuracy: true,
+                fastestInterval: 5000,
+                timeout: 15000,
+                maximumAge: 10000 
+              }
             );
         }
     }
@@ -85,10 +97,11 @@ export default class Maps extends Component{
       }
 
     render(){
+        const {userId} = this.state
         return(
             <View style={styles.container}>
                 <MapView
-                provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+                provider={PROVIDER_GOOGLE}
                 style={styles.map}
                 showsCompass={true}
                 zoomControlEnabled={true}
@@ -97,19 +110,47 @@ export default class Maps extends Component{
                 initialRegion={this.state.region}
                 >
                     {this.state.users.map((user, index) => {
-                        return (
-                            <Marker
-                            key={index}
-                            title={user.username}
-                            description={user.full_name}
-                            coordinate={user.Position}
-                            onCalloutPress={()=>{this.props.navigation.navigate('ChatRoom', {receiverData:user, userId:this.state.userId})}}
-                            >
-                                <View>
-                                    <Thumbnail small source={{uri: user.image}} />
-                                </View>
-                            </Marker>
-                        )
+                        if(user.Position.latitude !== null){
+                            return (
+                                <Marker
+                                key={index}
+                                title={
+                                    user.uid == userId ?
+                                        "YOU"
+                                    : 
+                                        user.username
+                                }
+                                description={
+                                    user.uid == userId ? 
+                                        ""
+                                    : 
+                                        user.full_name
+                                }
+                                coordinate={user.Position}
+                                onCalloutPress={
+                                    user.uid == userId ? 
+                                        ()=>{console.log(userId)}
+                                    :   
+                                        ()=>{this.props.navigation.navigate('ChatRoom', {receiverData:user, userId})}
+                                }
+                                >
+                                    {
+                                        user.uid ==userId ? 
+                                            <View>
+                                                <Image source={markerUser} style={{width: 40, height: 40}} />
+                                            </View>
+                                        : 
+    
+                                        <View>
+                                            <Thumbnail small source={{uri: user.image}} />
+                                        </View>
+                                    }
+                                </Marker>
+                            )
+                        }else{
+                            return <View></View>
+                        }
+                        
                     })}
                 </MapView>
             </View>

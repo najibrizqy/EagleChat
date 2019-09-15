@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
-import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
-import { Left, Body, Thumbnail, Text, Icon } from 'native-base';
-
-import headerLogo from '../Assets/header.png'
+import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { Thumbnail, Text, Icon } from 'native-base';
+import AsyncStorage from '@react-native-community/async-storage';
 
 class HeaderChat extends Component {
     constructor(props){
         super(props)
+        this.state= {
+            userData: props.receiverData
+        }
     }
 
     render(){
@@ -16,11 +18,13 @@ class HeaderChat extends Component {
         return(
             <View style={styles.header}>
                 <Icon type="AntDesign" name="arrowleft" style={styles.backIcon} onPress={() => this.props.navigation.goBack()}/>
-                <Thumbnail source={{ uri: `${image}` }} style={{width: 40, height: 40}}/>
-                <View style={styles.info}>
-                    <Text style={styles.name}>{name}</Text>
-                    <Text note style={styles.status}>{status}</Text>
-                </View>
+                <TouchableOpacity activeOpacity={1} style={styles.wrapper} onPress={() => {this.props.navigation.navigate('UserProfile', {userData: this.state.userData})}}>
+                    <Thumbnail source={{ uri: `${image}` }} style={{width: 40, height: 40}}/>
+                    <View style={styles.info}>
+                        <Text style={styles.name}>{name}</Text>
+                        <Text note style={styles.status}>{status}</Text>
+                    </View>
+                </TouchableOpacity>
             </View>
         )
     }
@@ -33,6 +37,8 @@ const styles = StyleSheet.create({
         padding: 10,
         paddingBottom: 5,
         borderWidth: 0,
+        flexDirection: 'row'
+    },wrapper:{
         flexDirection: 'row'
     },
     backIcon:{

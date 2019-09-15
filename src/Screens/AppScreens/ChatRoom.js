@@ -1,10 +1,10 @@
 import React, {Component, Fragment} from 'react';
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { GiftedChat, Send } from 'react-native-gifted-chat'
 import { Icon } from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage'
 
-import firebase, {Firestore} from '../../Config/Firebase';
+import {Firestore} from '../../Config/Firebase';
 import Header from '../../Components/HeaderChat';
 
 class ChatRoom extends Component {
@@ -65,7 +65,7 @@ class ChatRoom extends Component {
                 <GiftedChat
                     messages={this.state.messages}
                     onSend={messages => this.onSend(messages)}
-                    onPressAvatar={this.openFriendProfile}
+                    onPressAvatar={() => this.props.navigation.navigate('UserProfile', {userData: this.state.receiver})}
                     renderSend ={ (props) => {
                         return (
                             <Send

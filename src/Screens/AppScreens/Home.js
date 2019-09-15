@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Image } from "react-native";
-import { Container, Content, Tab, Tabs } from 'native-base';
+import { StyleSheet } from "react-native";
+import { Container, Tab, Tabs } from 'native-base';
 
 import Header from '../../Components/Header';
 import Maps from './Maps';
@@ -11,7 +11,7 @@ export default class HomeTabs extends Component {
   render() {
     return (
       <Container>
-        <Header />
+        <Header navigation={this.props.navigation} />
         <Tabs style={Platform.OS === 'android' ? { overflow: 'hidden' } : null}>
           <Tab heading="Maps" tabStyle={styles.color} activeTabStyle={styles.color} >
             <Maps navigation={this.props.navigation} />

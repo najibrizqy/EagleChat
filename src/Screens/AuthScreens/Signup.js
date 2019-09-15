@@ -54,6 +54,10 @@ class Signup extends Component {
       .then( async (user) => {
         const userID = user.user.uid
         await Firestore.collection('users').doc(userID).set({
+          Position: {
+            latitude: null,
+            longitude: null
+          },
           email: formData.email,
           full_name: formData.full_name,
           image: formData.image,

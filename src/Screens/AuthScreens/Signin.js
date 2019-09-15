@@ -36,7 +36,6 @@ class Signin extends Component {
     this.setState({
       formData: newFormData
     })
-    console.log(newFormData)
   }
 
   handleSubmit = async () => {

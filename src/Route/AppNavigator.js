@@ -6,6 +6,7 @@ import Signin from '../Screens/AuthScreens/Signin';
 import Signup from '../Screens/AuthScreens/Signup';
 import Home from '../Screens/AppScreens/Home';
 import ChatRoom from '../Screens/AppScreens/ChatRoom';
+import UserProfile from '../Screens/AppScreens/UserProfile';
 
 import Splash from '../Screens/Splash';
 
@@ -28,6 +29,9 @@ const AuthStack = createStackNavigator({
     },
     ChatRoom:{
       screen: ChatRoom
+    },
+    UserProfile:{
+      screen: UserProfile
     }
   },{
     headerMode: "none"

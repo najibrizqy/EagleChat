@@ -35,7 +35,9 @@ export default class FriendList extends Component{
             <List>
                 <ListItem avatar>
                     <Left>
-                        <Thumbnail source={{ uri: `${item.image}` }} />
+                        <TouchableOpacity activeOpacity={0.7} onPress={() => {this.props.navigation.navigate('UserProfile', {userData: item})}}>
+                            <Thumbnail source={{ uri: `${item.image}` }} />
+                        </TouchableOpacity>
                     </Left>
                     <Body>
                         <TouchableOpacity activeOpacity={1} onPress={() => {this.props.navigation.navigate('ChatRoom', {receiverData: item, userId: this.state.userId})}}>
