@@ -33,7 +33,7 @@ class Signup extends Component {
 
   handleSubmit = () => {
     const {formData} = this.state
-    if(formData.username == '' || formData.full_name == '' ){
+    if(formData.username.length < 6  || formData.full_name.length < 6  ){
       let errMsg = ''
       if(formData.username.length < 6 ){
         errMsg = 'The Username must be 6 characters long or more';

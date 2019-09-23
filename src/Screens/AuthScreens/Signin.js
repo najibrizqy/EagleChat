@@ -58,7 +58,7 @@ class Signin extends Component {
     })
     .catch(err => {
       this.setState({isLoading:false})
-      let errMsg = err.code == 'auth/invalid-email' ? 'Email not valid.': 'Email or password is wrong.';
+      let errMsg = err.code == 'auth/weak-password' ? 'The password is too weak.': err.message;
       Toast.show({
         text: errMsg,
         buttonText: 'Ok',
@@ -74,50 +74,50 @@ class Signin extends Component {
   render() {
     return (
       <Container style={styles.container}>
-        <Content showsVerticalScrollIndicator={false}>
-            <View>
-              <Image source={logo} style={styles.logo} />
-            </View>
-            <Form style={styles.formSignin}>
-              <Item rounded style={styles.input}>
-                <Icon type="MaterialIcons" name="email" style={styles.iconLabel} />
-                <Input 
-                  keyboardType='email-address' 
-                  placeholder="Email" 
-                  autoCompleteType='email' 
-                  onChangeText={(text)=>this.handleChange('email',text)} />
-              </Item>
-              <Item rounded style={styles.input}>
-                <Icon type="MaterialIcons" name="lock" style={styles.iconLabel} />
-                <Input 
-                  secureTextEntry={true} 
-                  placeholder="Password" 
-                  maxLength={16} 
-                  onChangeText={(text)=>this.handleChange('password',text)} />
-              </Item>
-              <Row>
-                <Col>
-                  <Text style={styles.btnForgot}>Forgot Password</Text>
-                </Col>
-              </Row>
-              {
-                this.state.isLoading == false ?
-                  <Button onPress={this.handleSubmit} full info style={styles.btnSignin}>
-                    <Text style={styles.textSignin}>SIGN IN</Text>
-                  </Button>
-                : 
-                  <Button onPress={this.handleSubmit} full info style={styles.btnSignin} disabled>
-                    <Spinner color='white' style={styles.loading} /><Text style={styles.textSignin}>SIGN IN</Text>
-                  </Button>
-              }
-            </Form>
+        <Content showsVerticalScrollIndicator={false} contentContainerStyle={{paddingTop: 100}}>
+          <View>
+            <Image source={logo} style={styles.logo} />
+          </View>
+          <Form style={styles.formSignin}>
+            <Item rounded style={styles.input}>
+              <Icon type="MaterialIcons" name="email" style={styles.iconLabel} />
+              <Input 
+                keyboardType='email-address' 
+                placeholder="Email" 
+                autoCompleteType='email' 
+                onChangeText={(text)=>this.handleChange('email',text)} />
+            </Item>
+            <Item rounded style={styles.input}>
+              <Icon type="MaterialIcons" name="lock" style={styles.iconLabel} />
+              <Input 
+                secureTextEntry={true} 
+                placeholder="Password" 
+                maxLength={16} 
+                onChangeText={(text)=>this.handleChange('password',text)} />
+            </Item>
             <Row>
               <Col>
-                <Text style={styles.foot}>Don't have an account? &nbsp;
-                  <Text style={styles.btnSignup} onPress={this.handleSignup}>Sign Up</Text>
-                </Text>
+                <Text style={styles.btnForgot}>Forgot Password</Text>
               </Col>
             </Row>
+            {
+              this.state.isLoading == false ?
+                <Button onPress={this.handleSubmit} full info style={styles.btnSignin}>
+                  <Text style={styles.textSignin}>SIGN IN</Text>
+                </Button>
+              : 
+                <Button onPress={this.handleSubmit} full info style={styles.btnSignin} disabled>
+                  <Spinner color='white' style={styles.loading} /><Text style={styles.textSignin}>SIGN IN</Text>
+                </Button>
+            }
+          </Form>
+          <Row>
+            <Col>
+              <Text style={styles.foot}>Don't have an account? &nbsp;
+                <Text style={styles.btnSignup} onPress={this.handleSignup}>Sign Up</Text>
+              </Text>
+            </Col>
+          </Row>
         </Content>
       </Container>
     );
@@ -132,14 +132,13 @@ class Signin extends Component {
 export default Signin
 
 let btnSignup = {
+  flex: 1,
   color: '#4B4C72',
 }
 
 const styles = StyleSheet.create({
     container: {
-      top: 40,
-      marginLeft: 20,
-      marginRight: 20,
+      marginHorizontal: 20,
     },
     formSignin: {
       marginTop: 10,
