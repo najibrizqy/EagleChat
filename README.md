@@ -22,6 +22,9 @@
   3. Type `npm install` or `yarn`
   4. Type `react-native run-android` to develop or `react-native run-android --variant=release` to release app
   
+## Dowonload The Apk
+  You can download the apk [here](https://drive.google.com/file/d/1o9pavxjLaJlaKIGhjLj-c7EyKl5ZcqC4/view?usp=sharing)
+  
 ## Screenshot
 <p align='center'>
   <span>
