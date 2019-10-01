@@ -23,7 +23,7 @@
   4. Type `react-native run-android` to develop or `react-native run-android --variant=release` to release app
   
 ## Dowonload The Apk
-  You can download the apk [here](https://drive.google.com/file/d/1o9pavxjLaJlaKIGhjLj-c7EyKl5ZcqC4/view?usp=sharing)
+  You can download the apk [here](https://drive.google.com/file/d/1pEyEYW6TymN7cqTwTSFpEYGMztmTsecn/view?usp=sharing)
   
 ## Screenshot
 <p align='center'>
@@ -42,7 +42,7 @@
 </p>
 <p align='center'>
   <span>
-      <image width="200" src="https://user-images.githubusercontent.com/33283502/65846706-d586dc80-e368-11e9-811a-a32aaded2871.png" />   
+      <image width="200" src="https://user-images.githubusercontent.com/33283502/65946651-cf742700-e460-11e9-96b0-2b9d7b38f332.jpg" />   
       <image width="200" src="https://user-images.githubusercontent.com/33283502/65846718-df104480-e368-11e9-9db7-2131bb3fd92a.png" />
   </span>
 </p>
