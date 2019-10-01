@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
-import { StyleSheet, View, TextInput } from "react-native";
-import { Container, Button, Text, Content, Thumbnail, Form, Label, Input, Item, Spinner, Toast } from 'native-base';
-import AsyncStorage from '@react-native-community/async-storage';
+import React, { Component } from 'react'
+import { StyleSheet, View, TouchableOpacity, PermissionsAndroid } from "react-native"
+import { Container, Button, Text, Content, Thumbnail, Form, Label, Input, Item, Spinner, Toast, Icon } from 'native-base'
+import AsyncStorage from '@react-native-community/async-storage'
+import ImagePicker from 'react-native-image-picker'
+import RNFetchBlob from 'react-native-fetch-blob'
 
-import firebase, {Firestore} from '../../Config/Firebase';
+import firebase, {Firestore} from '../../Config/Firebase'
 
 export default class Profile extends Component{
     constructor(props){
@@ -16,7 +18,8 @@ export default class Profile extends Component{
                 username: null,
                 image: null
             },
-            isLoading: false
+            isLoading: false,
+            uploadingImage: false
         }
     }
     
@@ -40,6 +43,79 @@ export default class Profile extends Component{
         })
     }
 
+    requestCameraPermission = async () => {
+        try {
+            const granted = await PermissionsAndroid.requestMultiple([
+                PermissionsAndroid.PERMISSIONS.CAMERA,
+                PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+                PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            ])
+            return granted === PermissionsAndroid.RESULTS.GRANTED
+        } catch (err) {
+            console.log(err);
+            return false
+        }
+    }
+
+    editImage = async () => {
+        const Blob = RNFetchBlob.polyfill.Blob
+        const fs = RNFetchBlob.fs
+        window.Blob = Blob
+        window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
+
+        const options = {
+            title: 'Select Image',
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+            },
+            mediaType: 'photo'
+        }
+
+        let cameraPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA) && PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE) && PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE)
+        if(!cameraPermission){
+            cameraPermission = await this.requestCameraPermission()
+        } else {
+            ImagePicker.showImagePicker(options, (response)=> {
+                this.setState({uploadingImage:true})
+                let uploadBob = null
+                const imageRef = firebase.storage().ref('Images').child('ProfileImages/' + this.state.uid)
+                fs.readFile(response.path, 'base64')
+                    .then( (data) => {
+                        return Blob.build(data, { type: `${response.mime};BASE64`} )
+                    })
+                    .then( (blob) => {
+                        uploadBob = blob
+                        return imageRef.put(blob, { contentType: response.mime})
+                    })
+                    .then( () => {
+                        uploadBob.close()
+                        return imageRef.getDownloadURL()
+                    })
+                    .then( (url) => {
+                        this.setState({
+                            formData:{
+                              ...this.state.formData,
+                              image: url
+                            },
+                            uploadingImage:false,
+                        })
+                        Toast.show({
+                            text: `Press save button to update profil`,
+                            buttonText: "Ok",
+                            position:'bottom',
+                            duration: 3000,
+                            style: styles.toast
+                        })
+                    })
+                    .catch( err => {
+                        console.log(err)
+                    })
+            })
+        }
+        
+    }
+
     handleSave = async () => {
         this.setState({isLoading:true})
         const {formData, uid} = this.state
@@ -60,7 +136,13 @@ export default class Profile extends Component{
                 })
             })
             .catch(err => {
-                console.log(err)
+                Toast.show({
+                    text:' failed to save profile '+ err.message,
+                    position: 'bottom',
+                    type: 'danger',
+                    duration: 4000,
+                    style: styles.toast
+                })
             })
     }
 
@@ -82,11 +164,21 @@ export default class Profile extends Component{
     }
 
     render(){
-        const {formData, isLoading} = this.state
+        const {formData, isLoading, uploadingImage} = this.state
         return(
             <Container>
                 <View style={styles.img}>
-                    <Thumbnail  source={{uri: formData.image}} style={styles.imageProfile} />
+                    {
+                        uploadingImage ? 
+                            <Spinner color="#3498db" />
+                        :
+                            <>
+                                <TouchableOpacity activeOpacity={0.9} style={styles.cameraWrapper} onPress={() => this.editImage()}>
+                                    <Icon type="Entypo" name="camera" style={styles.cameraIcon}/>
+                                </TouchableOpacity>
+                                <Thumbnail  source={{uri: formData.image}} style={styles.imageProfile} />
+                            </>
+                    }                    
                 </View>
                 <Content style={styles.content} >
                     <Form>
@@ -113,14 +205,6 @@ export default class Profile extends Component{
                             disabled 
                             underlineColorAndroid="#3498db"/>
                         </Item>
-                        <Item stackedLabel style={styles.bdBottom}>
-                            <Label>Image</Label>
-                            <Input 
-                            defaultValue={formData.image} 
-                            placeholder="Input Image URL" 
-                            underlineColorAndroid="#3498db"
-                            onChangeText={(text)=>this.handleChange('image',text)}/>
-                        </Item>
                     </Form>
                     <View style={styles.buttonWrap}>
                         {
@@ -133,7 +217,8 @@ export default class Profile extends Component{
                                     <Text style={styles.textBtnSave}> SAVE </Text>
                                 </Button>
                         }
-                        <Button danger style={styles.btnLogout} onPress={this.handleLogout}>
+                        <Button iconLeft danger onPress={this.handleLogout}>
+                            <Icon type="AntDesign" name="logout" style={styles.iconSignout}/>
                             <Text style={styles.textBtnSignout}> LOGOUT </Text>
                         </Button>
                     </View>
@@ -145,8 +230,10 @@ export default class Profile extends Component{
 
 const styles = StyleSheet.create({
     img:{
+        position: 'relative',
         marginTop: 20,
-        alignItems: 'center'
+        alignSelf: 'center',
+        zIndex: 1
     },
     content:{
         marginTop: 20,
@@ -160,14 +247,23 @@ const styles = StyleSheet.create({
         borderColor: "#3498db",
         borderRadius: 100
     },
+    cameraWrapper:{
+        position: 'absolute',
+        backgroundColor: '#3498db',
+        borderRadius: 30,
+        zIndex: 2,
+        bottom: 2,
+        right: 4
+    },
+    cameraIcon:{
+        fontSize: 17,
+        padding: 7,
+        color: '#FFF'
+    },
     btnSave:{
         alignItems: 'flex-start',
         width: 100,
         marginRight: 20
-    },
-    btnLogout:{
-        alignItems: 'flex-end',
-        width: 100
     },
     bdBottom:{
         borderBottomWidth:0
@@ -175,6 +271,7 @@ const styles = StyleSheet.create({
     buttonWrap: {
         marginTop: 20,
         flexDirection: 'row',
+        justifyContent: 'space-between',
         marginLeft: 20
     },
     textBtnSave:{
@@ -183,9 +280,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     textBtnSignout:{
-        paddingLeft: 20,
+        paddingLeft: 10,
         alignSelf: 'center',
         justifyContent: 'center'
+    },
+    iconSignout:{
+        fontSize: 20,
+        alignSelf:'center',
     },
     loading:{
         marginTop: -23,

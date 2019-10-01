@@ -6,7 +6,7 @@ const firebaseConfig = {
     authDomain: "chatapp-fc511.firebaseapp.com",
     databaseURL: "https://chatapp-fc511.firebaseio.com",
     projectId: "chatapp-fc511",
-    storageBucket: "",
+    storageBucket: "chatapp-fc511.appspot.com",
     messagingSenderId: "371814132168",
     appId: "1:371814132168:web:d6a25d039c95fafef2f8fd"
   };
