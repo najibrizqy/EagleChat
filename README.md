@@ -23,7 +23,7 @@
   4. Type `react-native run-android` to develop or `react-native run-android --variant=release` to release app
   
 ## Dowonload The Apk
-  You can download the apk [here](https://drive.google.com/file/d/1pEyEYW6TymN7cqTwTSFpEYGMztmTsecn/view?usp=sharing)
+  You can download the apk [here](https://drive.google.com/drive/folders/18JeMpkcQc5aMw8CEjtCaDE7y6j8wiw88?usp=sharing)
   
 ## Screenshot
 <p align='center'>
