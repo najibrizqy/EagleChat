@@ -108,6 +108,7 @@ export default class Maps extends Component{
                 showsUserLocation={true}
                 followsUserLocation={true}
                 initialRegion={this.state.region}
+                region={this.state.region}
                 >
                     {this.state.users.map((user, index) => {
                         if(user.Position.latitude !== null){

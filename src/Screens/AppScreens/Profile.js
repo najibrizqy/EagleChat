@@ -3,7 +3,7 @@ import { StyleSheet, View, TouchableOpacity, PermissionsAndroid } from "react-na
 import { Container, Button, Text, Content, Thumbnail, Form, Label, Input, Item, Spinner, Toast, Icon } from 'native-base'
 import AsyncStorage from '@react-native-community/async-storage'
 import ImagePicker from 'react-native-image-picker'
-import RNFetchBlob from 'react-native-fetch-blob'
+import RNFetchBlob from 'rn-fetch-blob'
 
 import firebase, {Firestore} from '../../Config/Firebase'
 
@@ -109,6 +109,7 @@ export default class Profile extends Component{
                         })
                     })
                     .catch( err => {
+                        this.setState({uploadingImage:false})
                         console.log(err)
                     })
             })
