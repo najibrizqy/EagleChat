@@ -40,9 +40,14 @@ export default class Maps extends Component{
 
     componentDidMount = async () => {
         this.setState({userId: await AsyncStorage.getItem('uid')})
+        this.getPosition()
+    }
+
+    getPosition = async () => {
         let hasLocationPermission = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
         if(!hasLocationPermission){
             hasLocationPermission = await this.requestLocationPermission()
+            this.getPosition()
         }
         if(hasLocationPermission){
             Geolocation.watchPosition(
