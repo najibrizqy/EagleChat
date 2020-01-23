@@ -20,7 +20,7 @@
   1. Download this repo or type `git clone https://github.com/najibrizqy136/EagleChat`
   2. Open project directory in CMD or Terminal
   3. Type `npm install` or `yarn`
-  4. Type `react-native run-android` to develop or `react-native run-android --variant=release` to release app
+  4. Type `react-native run-android` to develop or `gradlew assembleRelease` in android folder to release app
   
 ## Download The Apk
   You can download the apk [here](https://drive.google.com/drive/folders/18JeMpkcQc5aMw8CEjtCaDE7y6j8wiw88?usp=sharing)
