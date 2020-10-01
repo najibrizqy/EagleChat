@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     backIcon:{
         marginTop: 7,
         marginRight: 13,
-        color: "#FFF",
+        color: "#eee",
         marginLeft: 5,
         fontSize: 25
     },
