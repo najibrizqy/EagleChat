@@ -67,43 +67,34 @@ class ChatRoom extends Component {
     this.state.unsubscribeTargetChat();
   }
 
-  render() {
-    return (
-      <Fragment>
-        <Header
-          receiverData={this.state.receiver}
-          navigation={this.props.navigation}
-        />
-        <GiftedChat
-          messages={this.state.messages}
-          onSend={(messages) => this.onSend(messages)}
-          onPressAvatar={() =>
-            this.props.navigation.navigate('UserProfile', {
-              userData: this.state.receiver,
-            })
-          }
-          renderSend={(props) => {
-            return (
-              <Send {...props}>
-                <View style={styles.send}>
-                  <Icon
-                    type="MaterialIcons"
-                    name="send"
-                    style={{color: '#3498da'}}
-                  />
-                </View>
-              </Send>
-            );
-          }}
-          user={{
-            _id: this.state.senderId,
-            name: this.state.username,
-            avatar: this.state.image,
-          }}
-        />
-      </Fragment>
-    );
-  }
+    render(){
+        return(
+            <Fragment>
+                <Header receiverData={this.state.receiver} navigation={this.props.navigation} />
+                <GiftedChat
+                    messages={this.state.messages}
+                    onSend={messages => this.onSend(messages)}
+                    onPressAvatar={() => this.props.navigation.navigate('UserProfile', {userData: this.state.receiver})}
+                    renderSend ={ (props) => {
+                        return (
+                            <Send
+                                {...props}
+                            >
+                                <View style={styles.send}>
+                                    <Icon type="MaterialIcons" name="send" style={{color:"#3498da"}} />
+                                </View>
+                            </Send>
+                        );
+                    }}
+                    user={{
+                        _id: this.state.senderId,
+                        name: this.state.username,
+                        avatar: this.state.image
+                    }}
+                />
+            </Fragment>
+        )
+    }
 }
 
 const styles = StyleSheet.create({
