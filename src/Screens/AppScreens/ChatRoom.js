@@ -77,7 +77,7 @@ class ChatRoom extends Component {
                                 {...props}
                             >
                                 <View style={styles.send}>
-                                    <Icon type="MaterialIcons" name="send" style={{color:"#3498db"}} />
+                                    <Icon type="MaterialIcons" name="send" style={{color:"#3498da"}} />
                                 </View>
                             </Send>
                         );
