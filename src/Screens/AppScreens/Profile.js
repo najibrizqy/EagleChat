@@ -195,7 +195,7 @@ export default class Profile extends Component{
                             <Label>Username</Label>
                             <Input 
                             defaultValue={formData.username}
-                             placeholder="Input Username"
+                             placeholder="Input Username "
                              underlineColorAndroid="#3498db"
                              onChangeText={(text)=>this.handleChange('username',text)}/>
                         </Item>
